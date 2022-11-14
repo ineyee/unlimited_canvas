@@ -7,21 +7,32 @@ import 'package:unlimited_canvas_plan2/model/graphics_element_model.dart';
 
 /// 图形层Widget
 class GraphicsLayerWidget extends StatelessWidget {
-  const GraphicsLayerWidget({Key? key}) : super(key: key);
+  GraphicsLayerWidget({Key? key}) : super(key: key);
+
+  final WhiteBoardViewModel _whiteBoardViewModel =
+      Get.find<WhiteBoardViewModel>();
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<WhiteBoardViewModel>(
       id: ConstString.graphicsLayerPainterId,
       builder: (_) {
-        return Container(
-          color: Colors.red.withOpacity(0.5),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: RepaintBoundary(
-            child: CustomPaint(
-              isComplex: true,
-              painter: _GraphicsLayerPainter(),
+        return Transform(
+          transform: Matrix4.identity()
+            ..translate(
+              _whiteBoardViewModel.canvasOrigin.dx,
+              _whiteBoardViewModel.canvasOrigin.dy,
+            )
+            ..scale(_whiteBoardViewModel.curCanvasScale),
+          child: Container(
+            color: Colors.red.withOpacity(0.5),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: RepaintBoundary(
+              child: CustomPaint(
+                isComplex: true,
+                painter: _GraphicsLayerPainter(),
+              ),
             ),
           ),
         );
@@ -36,6 +47,8 @@ class _GraphicsLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    debugPrint("repaint");
+
     canvas.translate(
       _whiteBoardViewModel.curCanvasOffset.dx,
       _whiteBoardViewModel.curCanvasOffset.dy,
@@ -46,7 +59,7 @@ class _GraphicsLayerPainter extends CustomPainter {
     );
 
     for (GraphicsElementModel graphicsElementModel
-        in _whiteBoardViewModel.graphicsElementModelList) {
+    in _whiteBoardViewModel.graphicsElementModelList) {
       canvas.drawRect(
         Rect.fromPoints(
           graphicsElementModel.p1,
@@ -59,6 +72,11 @@ class _GraphicsLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GraphicsLayerPainter oldDelegate) {
-    return true;
+    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas &&
+        _whiteBoardViewModel.isTranslatingCanvas) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

@@ -28,7 +28,7 @@ class WhiteBoardPage extends StatelessWidget {
         child: Stack(
           children: [
             // const BackgroundLayerWidget(),
-            const GraphicsLayerWidget(),
+            GraphicsLayerWidget(),
             // const PencilLayerWidget(),
             GestureLayerWidget(),
             const Positioned(

@@ -25,8 +25,16 @@ class WhiteBoardViewModel extends GetxController {
   /// 选中的元素
   BaseElementModel? selectedElementModel;
 
+  /// 是否正在拖动画布
+  ///
+  /// 进入translatingCanvas模式之后，手指down下去才算在拖动，手指抬起来就不在拖动，模拟项目里的小手
+  bool isTranslatingCanvas = false;
+
   /// 画布当前的偏移量
   Offset curCanvasOffset = Offset.zero;
+
+  /// 画布原点
+  Offset canvasOrigin = Offset.zero;
 
   /// 画布当前的缩放比例
   double curCanvasScale = 1.0;
@@ -133,6 +141,7 @@ extension GestureDetectorLogic on WhiteBoardViewModel {
   /// 执行平移
   void _executeTranslating(ScaleUpdateDetails details) {
     curCanvasOffset += details.focalPointDelta;
+    canvasOrigin += details.focalPointDelta;
   }
 }
 
@@ -207,7 +216,9 @@ extension ListenerLogic on WhiteBoardViewModel {
         updateGraphicsLayerWidget();
         break;
       case OperationType.translateCanvas:
+        isTranslatingCanvas = true;
         curCanvasOffset += event.localDelta;
+        canvasOrigin += event.localDelta;
         updateAllLayerWidget();
         break;
     }
@@ -241,39 +252,44 @@ extension ListenerLogic on WhiteBoardViewModel {
         graphicsElementModel.p2 = point;
         updateGraphicsLayerWidget();
         break;
+      case OperationType.translateCanvas:
+        isTranslatingCanvas = false;
+        canvasOrigin = Offset.zero;
+        updateAllLayerWidget();
+        break;
     }
   }
 
   void onPointerSignal(PointerSignalEvent event) {
-    if (event is PointerScrollEvent) {
-      // 鼠标滚轮事件
-      if (event.scrollDelta.dy < 0) {
-        // 缩小
-        operationType = OperationType.scaleCanvas;
-        centerZoomCanvas(
-          type: CenterZoomCanvasType.zoomOut,
-          center: event.position,
-          stepScale: 0.02,
-        );
-        return;
-      }
-
-      if (event.scrollDelta.dy > 0) {
-        // 放大
-        operationType = OperationType.scaleCanvas;
-        centerZoomCanvas(
-          type: CenterZoomCanvasType.zoomIn,
-          center: event.position,
-          stepScale: 0.02,
-        );
-        return;
-      }
-
-      if (event.scrollDelta.dy == 0) {
-        // 缩放结束
-        operationType = OperationType.scaleCanvas;
-      }
-    }
+    // if (event is PointerScrollEvent) {
+    //   // 鼠标滚轮事件
+    //   if (event.scrollDelta.dy < 0) {
+    //     // 缩小
+    //     operationType = OperationType.scaleCanvas;
+    //     centerZoomCanvas(
+    //       type: CenterZoomCanvasType.zoomOut,
+    //       center: event.position,
+    //       stepScale: 0.02,
+    //     );
+    //     return;
+    //   }
+    //
+    //   if (event.scrollDelta.dy > 0) {
+    //     // 放大
+    //     operationType = OperationType.scaleCanvas;
+    //     centerZoomCanvas(
+    //       type: CenterZoomCanvasType.zoomIn,
+    //       center: event.position,
+    //       stepScale: 0.02,
+    //     );
+    //     return;
+    //   }
+    //
+    //   if (event.scrollDelta.dy == 0) {
+    //     // 缩放结束
+    //     operationType = OperationType.scaleCanvas;
+    //   }
+    // }
   }
 }
 
