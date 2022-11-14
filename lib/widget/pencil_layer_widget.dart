@@ -7,21 +7,31 @@ import 'package:unlimited_canvas_plan2/model/pencil_element_model.dart';
 
 /// 笔迹层Widget
 class PencilLayerWidget extends StatelessWidget {
-  const PencilLayerWidget({Key? key}) : super(key: key);
+  PencilLayerWidget({Key? key}) : super(key: key);
+
+  final WhiteBoardViewModel _whiteBoardViewModel =
+  Get.find<WhiteBoardViewModel>();
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<WhiteBoardViewModel>(
       id: ConstString.pencilLayerPainterId,
       builder: (_) {
-        return Container(
-          color: Colors.red.withOpacity(0.5),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: RepaintBoundary(
-            child: CustomPaint(
-              isComplex: true,
-              painter: _PencilLayerPainter(),
+        return Transform(
+          transform: Matrix4.identity()
+            ..translate(
+              _whiteBoardViewModel.curCanvasOffset.dx,
+              _whiteBoardViewModel.curCanvasOffset.dy,
+            )
+            ..scale(_whiteBoardViewModel.curCanvasScale),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: RepaintBoundary(
+              child: CustomPaint(
+                isComplex: true,
+                painter: _PencilLayerPainter(),
+              ),
             ),
           ),
         );
@@ -36,14 +46,7 @@ class _PencilLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.translate(
-      _whiteBoardViewModel.curCanvasOffset.dx,
-      _whiteBoardViewModel.curCanvasOffset.dy,
-    );
-    canvas.scale(
-      _whiteBoardViewModel.curCanvasScale,
-      _whiteBoardViewModel.curCanvasScale,
-    );
+    debugPrint("PencilLayerWidget===repaint");
 
     for (PencilElementModel pencilElementModel
         in _whiteBoardViewModel.pencilElementModelList) {
@@ -69,6 +72,15 @@ class _PencilLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PencilLayerPainter oldDelegate) {
+    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas &&
+        _whiteBoardViewModel.isTranslatingCanvas) {
+      return false;
+    }
+
+    if (_whiteBoardViewModel.operationType == OperationType.scaleCanvas) {
+      return false;
+    }
+
     return true;
   }
 }

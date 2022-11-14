@@ -41,7 +41,9 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     });
     _scaleAnimation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _whiteBoardViewModel.operationType == OperationType.drawPencil;
+        _whiteBoardViewModel.operationType = OperationType.drawPencil;
+        _whiteBoardViewModel.scalingCanvasScale = 1.0;
+        _whiteBoardViewModel.updateAllLayerWidget();
       }
     });
   }

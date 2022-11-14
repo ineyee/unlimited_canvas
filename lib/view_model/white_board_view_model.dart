@@ -16,6 +16,9 @@ class WhiteBoardViewModel extends GetxController {
   /// 默认绘制笔迹
   OperationType operationType = OperationType.drawPencil;
 
+  /// 正在绘制的元素
+  List<BaseElementModel> drawingElementModelList = [];
+
   /// 所有的笔迹元素
   List<PencilElementModel> pencilElementModelList = [];
 
@@ -33,14 +36,17 @@ class WhiteBoardViewModel extends GetxController {
   /// 画布当前的偏移量
   Offset curCanvasOffset = Offset.zero;
 
-  /// 画布原点
-  Offset canvasOrigin = Offset.zero;
+  /// 画布正在平移过程中时的偏移量
+  Offset translatingCanvasOffset = Offset.zero;
 
   /// 画布当前的缩放比例
   double curCanvasScale = 1.0;
 
   /// 画布上一次的缩放比例
   double preCanvasScale = 1.0;
+
+  /// 画布正在缩放过程中时的缩放比例
+  double scalingCanvasScale = 1.0;
 
   final double minCanvasScale = 0.1;
   final double maxCanvasScale = 4.0;
@@ -141,7 +147,7 @@ extension GestureDetectorLogic on WhiteBoardViewModel {
   /// 执行平移
   void _executeTranslating(ScaleUpdateDetails details) {
     curCanvasOffset += details.focalPointDelta;
-    canvasOrigin += details.focalPointDelta;
+    translatingCanvasOffset += details.focalPointDelta;
   }
 }
 
@@ -176,7 +182,7 @@ extension ListenerLogic on WhiteBoardViewModel {
       case OperationType.drawPencil:
         PencilElementModel pencilElementModel = PencilElementModel();
         pencilElementModel.points.add(point);
-        pencilElementModelList.add(pencilElementModel);
+        drawingElementModelList.add(pencilElementModel);
         updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:
@@ -184,7 +190,7 @@ extension ListenerLogic on WhiteBoardViewModel {
           p1: point,
           p2: point,
         );
-        graphicsElementModelList.add(graphicsElementModel);
+        drawingElementModelList.add(graphicsElementModel);
         updateGraphicsLayerWidget();
         break;
     }
@@ -205,20 +211,21 @@ extension ListenerLogic on WhiteBoardViewModel {
 
     switch (operationType) {
       case OperationType.drawPencil:
-        PencilElementModel pencilElementModel = pencilElementModelList.last;
+        PencilElementModel pencilElementModel =
+            drawingElementModelList.last as PencilElementModel;
         pencilElementModel.points.add(point);
         updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:
         GraphicsElementModel graphicsElementModel =
-            graphicsElementModelList.last;
+            drawingElementModelList.last as GraphicsElementModel;
         graphicsElementModel.p2 = point;
         updateGraphicsLayerWidget();
         break;
       case OperationType.translateCanvas:
         isTranslatingCanvas = true;
         curCanvasOffset += event.localDelta;
-        canvasOrigin += event.localDelta;
+        translatingCanvasOffset += event.localDelta;
         updateAllLayerWidget();
         break;
     }
@@ -241,20 +248,25 @@ extension ListenerLogic on WhiteBoardViewModel {
 
     switch (operationType) {
       case OperationType.drawPencil:
-        PencilElementModel pencilElementModel = pencilElementModelList.last;
+        PencilElementModel pencilElementModel =
+            drawingElementModelList.last as PencilElementModel;
         pencilElementModel.points.add(point);
         pencilElementModel.setP1P2();
+        drawingElementModelList.removeLast();
+        pencilElementModelList.add(pencilElementModel);
         updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:
         GraphicsElementModel graphicsElementModel =
-            graphicsElementModelList.last;
+            drawingElementModelList.last as GraphicsElementModel;
         graphicsElementModel.p2 = point;
+        drawingElementModelList.removeLast();
+        graphicsElementModelList.add(graphicsElementModel);
         updateGraphicsLayerWidget();
         break;
       case OperationType.translateCanvas:
         isTranslatingCanvas = false;
-        canvasOrigin = Offset.zero;
+        translatingCanvasOffset = Offset.zero;
         updateAllLayerWidget();
         break;
     }
@@ -327,6 +339,7 @@ extension CenterZoomCanvasLogic on WhiteBoardViewModel {
   }) {
     preCanvasScale = curCanvasScale;
     curCanvasScale = scale;
+    scalingCanvasScale = scale;
     curCanvasOffset += AlgorithmUtil.centerZoomAlgorithm(
       center: Offset(
         MediaQuery.of(context).size.width / 2,
@@ -355,18 +368,22 @@ extension CenterZoomCanvasLogic on WhiteBoardViewModel {
       if (double.parse(curCanvasScale.toStringAsFixed(1)) <= minCanvasScale) {
         preCanvasScale = curCanvasScale;
         curCanvasScale = minCanvasScale;
+        scalingCanvasScale = minCanvasScale;
       } else {
         preCanvasScale = curCanvasScale;
         curCanvasScale -= stepScale;
+        scalingCanvasScale -= stepScale;
       }
     } else if (type == CenterZoomCanvasType.zoomIn) {
       // 中心放大画布
       if (double.parse(curCanvasScale.toStringAsFixed(1)) >= maxCanvasScale) {
         preCanvasScale = curCanvasScale;
         curCanvasScale = maxCanvasScale;
+        scalingCanvasScale = maxCanvasScale;
       } else {
         preCanvasScale = curCanvasScale;
         curCanvasScale += stepScale;
+        scalingCanvasScale += stepScale;
       }
     }
 
@@ -385,12 +402,14 @@ extension CenterZoomCanvasLogic on WhiteBoardViewModel {
 extension UpdateLayer on WhiteBoardViewModel {
   void updateGraphicsLayerWidget() {
     update([
+      ConstString.drawingLayerPainterId,
       ConstString.graphicsLayerPainterId,
     ]);
   }
 
   void updatePencilLayerWidget() {
     update([
+      ConstString.drawingLayerPainterId,
       ConstString.pencilLayerPainterId,
     ]);
   }
@@ -403,6 +422,7 @@ extension UpdateLayer on WhiteBoardViewModel {
 
   void updateAllLayerWidget() {
     update([
+      ConstString.drawingLayerPainterId,
       ConstString.graphicsLayerPainterId,
       ConstString.pencilLayerPainterId,
       ConstString.toolBarWidgetId,

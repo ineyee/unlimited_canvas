@@ -20,12 +20,11 @@ class GraphicsLayerWidget extends StatelessWidget {
         return Transform(
           transform: Matrix4.identity()
             ..translate(
-              _whiteBoardViewModel.canvasOrigin.dx,
-              _whiteBoardViewModel.canvasOrigin.dy,
+              _whiteBoardViewModel.curCanvasOffset.dx,
+              _whiteBoardViewModel.curCanvasOffset.dy,
             )
             ..scale(_whiteBoardViewModel.curCanvasScale),
           child: Container(
-            color: Colors.red.withOpacity(0.5),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: RepaintBoundary(
@@ -47,19 +46,19 @@ class _GraphicsLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint("repaint");
+    debugPrint("GraphicsLayerWidget===repaint");
 
-    canvas.translate(
-      _whiteBoardViewModel.curCanvasOffset.dx,
-      _whiteBoardViewModel.curCanvasOffset.dy,
-    );
-    canvas.scale(
-      _whiteBoardViewModel.curCanvasScale,
-      _whiteBoardViewModel.curCanvasScale,
-    );
+    // canvas.translate(
+    //   _whiteBoardViewModel.curCanvasOffset.dx,
+    //   _whiteBoardViewModel.curCanvasOffset.dy,
+    // );
+    // canvas.scale(
+    //   _whiteBoardViewModel.curCanvasScale,
+    //   _whiteBoardViewModel.curCanvasScale,
+    // );
 
     for (GraphicsElementModel graphicsElementModel
-    in _whiteBoardViewModel.graphicsElementModelList) {
+        in _whiteBoardViewModel.graphicsElementModelList) {
       canvas.drawRect(
         Rect.fromPoints(
           graphicsElementModel.p1,
@@ -75,8 +74,12 @@ class _GraphicsLayerPainter extends CustomPainter {
     if (_whiteBoardViewModel.operationType == OperationType.translateCanvas &&
         _whiteBoardViewModel.isTranslatingCanvas) {
       return false;
-    } else {
-      return true;
     }
+
+    if (_whiteBoardViewModel.operationType == OperationType.scaleCanvas) {
+      return false;
+    }
+
+    return true;
   }
 }

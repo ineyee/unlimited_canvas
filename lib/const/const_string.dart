@@ -10,4 +10,7 @@ class ConstString {
 
   /// 笔迹层Widget的id
   static const pencilLayerPainterId = "pencilLayerPainterId";
+
+  /// 绘制层Widget的id
+  static const drawingLayerPainterId = "drawingLayerPainterId";
 }
