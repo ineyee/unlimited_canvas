@@ -17,19 +17,19 @@ class WhiteBoardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 设置画布的原点为可视区域的中心，即一上来就把画布的原点translate到可视区域中心的位置
-    _whiteBoardViewModel.curCanvasOffset = Offset(
-      MediaQuery.of(context).size.width / 2,
-      MediaQuery.of(context).size.height / 2,
-    );
+    // _whiteBoardViewModel.curCanvasOffset = Offset(
+    //   MediaQuery.of(context).size.width / 2,
+    //   MediaQuery.of(context).size.height / 2,
+    // );
 
     return Scaffold(
       body: FPSWidget(
         alignment: Alignment.bottomLeft,
         child: Stack(
           children: [
-            const BackgroundLayerWidget(),
+            // const BackgroundLayerWidget(),
             const GraphicsLayerWidget(),
-            const PencilLayerWidget(),
+            // const PencilLayerWidget(),
             GestureLayerWidget(),
             const Positioned(
               top: 20,

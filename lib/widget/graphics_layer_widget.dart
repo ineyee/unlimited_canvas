@@ -14,7 +14,8 @@ class GraphicsLayerWidget extends StatelessWidget {
     return GetBuilder<WhiteBoardViewModel>(
       id: ConstString.graphicsLayerPainterId,
       builder: (_) {
-        return SizedBox(
+        return Container(
+          color: Colors.red.withOpacity(0.5),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: RepaintBoundary(
@@ -44,38 +45,15 @@ class _GraphicsLayerPainter extends CustomPainter {
       _whiteBoardViewModel.curCanvasScale,
     );
 
-    Rect visibleAreaRect = Rect.fromLTWH(0, 0, size.width, size.height);
-    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas ||
-        _whiteBoardViewModel.operationType == OperationType.scaleCanvas ||
-        _whiteBoardViewModel.operationType ==
-            OperationType.translateAndScaleCanvas) {
-      for (GraphicsElementModel graphicsElementModel
-          in _whiteBoardViewModel.graphicsElementModelList) {
-        Rect elementVisibleRect = AlgorithmUtil.visibleRectOfElement(
-          baseElementModel: graphicsElementModel,
-          curCanvasOffset: _whiteBoardViewModel.curCanvasOffset,
-          curCanvasScale: _whiteBoardViewModel.curCanvasScale,
-        );
-        if (visibleAreaRect.overlaps(elementVisibleRect)) {
-          canvas.drawRect(
-            Rect.fromPoints(
-              graphicsElementModel.p1,
-              graphicsElementModel.p2,
-            ),
-            Paint(),
-          );
-        }
-      }
-    } else {
-      for (GraphicsElementModel graphicsElementModel
-          in _whiteBoardViewModel.graphicsElementModelList) {
-        Rect rect =
-            Rect.fromPoints(graphicsElementModel.p1, graphicsElementModel.p2);
-        canvas.drawRect(
-          rect,
-          Paint(),
-        );
-      }
+    for (GraphicsElementModel graphicsElementModel
+        in _whiteBoardViewModel.graphicsElementModelList) {
+      canvas.drawRect(
+        Rect.fromPoints(
+          graphicsElementModel.p1,
+          graphicsElementModel.p2,
+        ),
+        Paint(),
+      );
     }
   }
 

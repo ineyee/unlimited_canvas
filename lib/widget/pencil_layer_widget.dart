@@ -14,7 +14,8 @@ class PencilLayerWidget extends StatelessWidget {
     return GetBuilder<WhiteBoardViewModel>(
       id: ConstString.pencilLayerPainterId,
       builder: (_) {
-        return SizedBox(
+        return Container(
+          color: Colors.red.withOpacity(0.5),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: RepaintBoundary(
@@ -44,59 +45,25 @@ class _PencilLayerPainter extends CustomPainter {
       _whiteBoardViewModel.curCanvasScale,
     );
 
-    Rect visibleAreaRect = Rect.fromLTWH(0, 0, size.width, size.height);
-    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas ||
-        _whiteBoardViewModel.operationType == OperationType.scaleCanvas ||
-        _whiteBoardViewModel.operationType ==
-            OperationType.translateAndScaleCanvas) {
-      for (PencilElementModel pencilElementModel
-          in _whiteBoardViewModel.pencilElementModelList) {
-        Rect elementVisibleRect = AlgorithmUtil.visibleRectOfElement(
-          baseElementModel: pencilElementModel,
-          curCanvasOffset: _whiteBoardViewModel.curCanvasOffset,
-          curCanvasScale: _whiteBoardViewModel.curCanvasScale,
-        );
-        if (visibleAreaRect.overlaps(elementVisibleRect)) {
-          Path path = Path();
-          int i = 0;
-          for (Offset item in pencilElementModel.points) {
-            if (i == 0) {
-              path.moveTo(item.dx, item.dy);
-            } else {
-              path.lineTo(item.dx, item.dy);
-            }
-            i++;
-          }
-          canvas.drawPath(
-            path,
-            Paint()
-              ..color = Colors.red
-              ..strokeWidth = 5
-              ..style = PaintingStyle.stroke,
-          );
+    for (PencilElementModel pencilElementModel
+        in _whiteBoardViewModel.pencilElementModelList) {
+      Path path = Path();
+      int i = 0;
+      for (Offset item in pencilElementModel.points) {
+        if (i == 0) {
+          path.moveTo(item.dx, item.dy);
+        } else {
+          path.lineTo(item.dx, item.dy);
         }
+        i++;
       }
-    } else {
-      for (PencilElementModel pencilElementModel
-          in _whiteBoardViewModel.pencilElementModelList) {
-        Path path = Path();
-        int i = 0;
-        for (Offset item in pencilElementModel.points) {
-          if (i == 0) {
-            path.moveTo(item.dx, item.dy);
-          } else {
-            path.lineTo(item.dx, item.dy);
-          }
-          i++;
-        }
-        canvas.drawPath(
-          path,
-          Paint()
-            ..color = Colors.red
-            ..strokeWidth = 5
-            ..style = PaintingStyle.stroke,
-        );
-      }
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = Colors.red
+          ..strokeWidth = 5
+          ..style = PaintingStyle.stroke,
+      );
     }
   }
 
