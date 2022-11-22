@@ -1,37 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:unlimited_canvas_plan2/algorithm/algorithm_util.dart';
-import 'package:unlimited_canvas_plan2/const/const_string.dart';
-import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/model/pencil_element_model.dart';
+import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
+import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
 /// 笔迹层Widget
 class PencilLayerWidget extends StatelessWidget {
-  PencilLayerWidget({Key? key}) : super(key: key);
-
-  final WhiteBoardViewModel _whiteBoardViewModel =
-  Get.find<WhiteBoardViewModel>();
+  const PencilLayerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<WhiteBoardViewModel>(
-      id: ConstString.pencilLayerPainterId,
-      builder: (_) {
+      id: ConstString.pencilLayerWidgetId,
+      builder: (WhiteBoardViewModel whiteBoardViewModel) {
         return Transform(
           transform: Matrix4.identity()
             ..translate(
-              _whiteBoardViewModel.curCanvasOffset.dx,
-              _whiteBoardViewModel.curCanvasOffset.dy,
+              whiteBoardViewModel.curCanvasOffset.dx,
+              whiteBoardViewModel.curCanvasOffset.dy,
             )
-            ..scale(_whiteBoardViewModel.curCanvasScale),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: RepaintBoundary(
-              child: CustomPaint(
-                isComplex: true,
-                painter: _PencilLayerPainter(),
-              ),
+            ..scale(whiteBoardViewModel.curCanvasScale),
+          child: RepaintBoundary(
+            child: CustomPaint(
+              isComplex: true,
+              painter: _PencilLayerPainter(),
             ),
           ),
         );
@@ -63,7 +55,7 @@ class _PencilLayerPainter extends CustomPainter {
       canvas.drawPath(
         path,
         Paint()
-          ..color = Colors.red
+          ..color = Colors.purple
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
@@ -72,15 +64,11 @@ class _PencilLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PencilLayerPainter oldDelegate) {
-    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas &&
-        _whiteBoardViewModel.isTranslatingCanvas) {
-      return false;
+    // 新增笔迹再重绘，其它情况下都不需要重绘
+    if (_whiteBoardViewModel.operationType == OperationType.drawPencil) {
+      return true;
     }
 
-    if (_whiteBoardViewModel.operationType == OperationType.scaleCanvas) {
-      return false;
-    }
-
-    return true;
+    return false;
   }
 }

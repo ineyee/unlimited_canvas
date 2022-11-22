@@ -8,45 +8,45 @@ class PencilElementModel extends BaseElementModel {
   List<Offset> points = [];
 
   /// 这条笔迹上最左边的x
-  double mostLeftX = 0;
+  double _mostLeftX = 0;
 
   /// 这条笔迹上最右边的x
-  double mostRightX = 0;
+  double _mostRightX = 0;
 
   /// 这条笔迹上最上边的y
-  double mostTopY = 0;
+  double _mostTopY = 0;
 
   /// 这条笔迹上最下边的y
-  double mostBottomY = 0;
+  double _mostBottomY = 0;
 
   /// 绘制完后设置一下P1和P2
   void setP1P2() {
     for (int i = 0; i < points.length; i++) {
       Offset point = points[i];
       if (i == 0) {
-        mostLeftX = point.dx;
-        mostRightX = point.dx;
-        mostTopY = point.dy;
-        mostBottomY = point.dy;
+        _mostLeftX = point.dx;
+        _mostRightX = point.dx;
+        _mostTopY = point.dy;
+        _mostBottomY = point.dy;
       } else {
-        if (point.dx < mostLeftX) {
-          mostLeftX = point.dx;
+        if (point.dx < _mostLeftX) {
+          _mostLeftX = point.dx;
         }
 
-        if (point.dx > mostRightX) {
-          mostRightX = point.dx;
+        if (point.dx > _mostRightX) {
+          _mostRightX = point.dx;
         }
 
-        if (point.dy < mostTopY) {
-          mostTopY = point.dy;
+        if (point.dy < _mostTopY) {
+          _mostTopY = point.dy;
         }
 
-        if (point.dy > mostBottomY) {
-          mostBottomY = point.dy;
+        if (point.dy > _mostBottomY) {
+          _mostBottomY = point.dy;
         }
       }
     }
-    p1 = Offset(mostLeftX, mostTopY);
-    p2 = Offset(mostRightX, mostBottomY);
+    p1 = Offset(_mostLeftX, _mostTopY);
+    p2 = Offset(_mostRightX, _mostBottomY);
   }
 }

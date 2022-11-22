@@ -2,53 +2,130 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:unlimited_canvas_plan2/const/const_number.dart';
 import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
+import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
-/// 背景层Widget，本质上就是一个画布
+/// 背景层Widget
 class BackgroundLayerWidget extends StatelessWidget {
   const BackgroundLayerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<WhiteBoardViewModel>(builder: (_) {
-      return CustomPaint(
-        size: MediaQuery.of(context).size,
-        painter: BGPainter(
-          visibleAreaWidth: MediaQuery.of(context).size.width / 2,
-          visibleAreaHeight: MediaQuery.of(context).size.height / 2,
-        ),
-      );
-    });
+    return GetBuilder<WhiteBoardViewModel>(
+      id: ConstString.backgroundLayerWidgetId,
+      builder: (WhiteBoardViewModel whiteBoardViewModel) {
+        return Transform(
+          transform: Matrix4.identity()
+            ..translate(
+              whiteBoardViewModel.curCanvasOffset.dx - ConstNumber.screenWidth / 2,
+              whiteBoardViewModel.curCanvasOffset.dy - ConstNumber.screenHeight / 2,
+            )
+            ..scale(whiteBoardViewModel.curCanvasScale),
+          child: RepaintBoundary(
+            child: CustomPaint(
+              isComplex: true,
+              painter: _BackgroundLayerPainter(),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
-class BGPainter extends CustomPainter {
-  BGPainter({
-    this.visibleAreaWidth = 0,
-    this.visibleAreaHeight = 0,
-  });
-
-  final double visibleAreaWidth;
-  final double visibleAreaHeight;
-  final WhiteBoardViewModel _canvasViewModel = Get.find<WhiteBoardViewModel>();
+class _BackgroundLayerPainter extends CustomPainter {
+  final WhiteBoardViewModel _whiteBoardViewModel =
+      Get.find<WhiteBoardViewModel>();
 
   @override
   void paint(Canvas canvas, Size size) {
-    // canvas.translate(_canvasViewModel.curCanvasOffset.dx,
-    //     _canvasViewModel.curCanvasOffset.dy);
-    // canvas.scale(
-    //     _canvasViewModel.canvasScale, _canvasViewModel.canvasScale);
-    // drawGrid(canvas, size);
-    // drawCoo(canvas, Size(ConstNumber.screenWidth / 2, ConstNumber.screenHeight / 2), size);
-    // drawCenter(canvas, _canvasViewModel.curCanvasOffset);
+    debugPrint("BackgroundLayerWidget===repaint");
+
+    drawDot(canvas);
   }
 
   @override
-  bool shouldRepaint(covariant BGPainter oldDelegate) {
+  bool shouldRepaint(covariant _BackgroundLayerPainter oldDelegate) {
     return true;
   }
-}
 
-extension DrawBG on BGPainter {
+  void drawDot(Canvas canvas) {
+    double dotWidth = 1.5;
+    double scale = _whiteBoardViewModel.curCanvasScale;
+    double space = 40 * scale;
+
+    double screenWidth = ConstNumber.screenWidth;
+    double screenHeight = ConstNumber.screenHeight;
+
+    Offset centerPoint = Offset(ConstNumber.screenWidth / 2, ConstNumber.screenHeight / 2);
+
+    int i = 0;
+    int j = 0;
+
+    /// 左上角
+    i = 0;
+    for (double w = centerPoint.dy; w > 0; w -= space) {
+      j = 0;
+      for (double e = centerPoint.dx; e > 0; e -= space) {
+        canvas.drawCircle(
+            Offset(centerPoint.dx - space * j, centerPoint.dy - space * i),
+            dotWidth,
+            Paint());
+
+        j++;
+      }
+
+      i++;
+    }
+
+    /// 右上角
+    i = 0;
+    for (double w = centerPoint.dy; w > 0; w -= space) {
+      j = 0;
+      for (double e = screenWidth - centerPoint.dx; e > 0; e -= space) {
+        canvas.drawCircle(
+            Offset(centerPoint.dx + space * j, centerPoint.dy - space * i),
+            dotWidth,
+            Paint());
+
+        j++;
+      }
+
+      i++;
+    }
+
+    /// 右下角
+    i = 0;
+    for (double w = screenHeight - centerPoint.dy; w > 0; w -= space) {
+      j = 0;
+      for (double e = screenWidth - centerPoint.dx; e > 0; e -= space) {
+        canvas.drawCircle(
+            Offset(centerPoint.dx + space * j, centerPoint.dy + space * i),
+            dotWidth,
+            Paint());
+
+        j++;
+      }
+
+      i++;
+    }
+
+    /// 左下角
+    i = 0;
+    for (double w = screenHeight - centerPoint.dy; w > 0; w -= space) {
+      j = 0;
+      for (double e = centerPoint.dx; e > 0; e -= space) {
+        canvas.drawCircle(
+            Offset(centerPoint.dx - space * j, centerPoint.dy + space * i),
+            dotWidth,
+            Paint());
+
+        j++;
+      }
+
+      i++;
+    }
+  }
+
   /*
  绘制网格路径
  @param step   小正方形边长
@@ -69,28 +146,6 @@ extension DrawBG on BGPainter {
     return path;
   }
 
-/*
-  坐标系路径
-  @param coo     坐标点
-  @param winSize 屏幕尺寸
-  @return 坐标系路径
- */
-  Path cooPath(Size coo, Size winSize) {
-    Path path = Path();
-    //x正半轴线
-    path.moveTo(coo.width, coo.height);
-    path.lineTo(winSize.width, coo.height);
-    //x负半轴线
-    path.moveTo(coo.width, coo.height);
-    path.lineTo(coo.width - winSize.width, coo.height);
-    //y负半轴线
-    path.moveTo(coo.width, coo.height);
-    path.lineTo(coo.width, coo.height - winSize.height);
-    //y负半轴线
-    path.moveTo(coo.width, coo.height);
-    path.lineTo(coo.width, winSize.height);
-    return path;
-  }
 
   //绘制网格
   drawGrid(Canvas canvas, Size winSize,
@@ -100,35 +155,5 @@ extension DrawBG on BGPainter {
     paint.color = Color(color);
     paint.isAntiAlias = true;
     canvas.drawPath(gridPath(winSize, step), paint);
-  }
-
-//绘制坐标系
-  drawCoo(Canvas canvas, Size coo, Size winSize) {
-    //初始化网格画笔
-    Paint paint = Paint();
-    paint.strokeWidth = 2;
-    paint.style = PaintingStyle.stroke;
-
-    //绘制直线
-    canvas.drawPath(cooPath(coo, winSize), paint);
-    //左箭头
-    canvas.drawLine(Offset(winSize.width, coo.height),
-        Offset(winSize.width - 10, coo.height - 6), paint);
-    canvas.drawLine(Offset(winSize.width, coo.height),
-        Offset(winSize.width - 10, coo.height + 6), paint);
-    //下箭头
-    canvas.drawLine(Offset(coo.width, winSize.height),
-        Offset(coo.width - 6, winSize.height - 10), paint);
-    canvas.drawLine(Offset(coo.width, winSize.height),
-        Offset(coo.width + 6, winSize.height - 10), paint);
-  }
-
-//绘制中心点
-  drawCenter(Canvas canvas, Offset offset,
-      [double radius = 10.0, int color = 0xff06BDe8]) {
-    Paint paint = Paint();
-    paint.style = PaintingStyle.fill;
-    paint.color = Colors.red; // || Color(color);
-    canvas.drawCircle(offset, radius, paint);
   }
 }

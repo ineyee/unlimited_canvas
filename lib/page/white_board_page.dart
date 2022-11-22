@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fps_widget/fps_widget.dart';
-import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/widget/background_layer_widget.dart';
-import 'package:unlimited_canvas_plan2/widget/drawing_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/graphics_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/pencil_layer_widget.dart';
+import 'package:unlimited_canvas_plan2/widget/drawing_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/gesture_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/tool_bar_widget.dart';
+import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 
-/// 白板界面
+/// 白板界面，从下往上分为5层：
+///
+/// 1、背景层
+/// 2、图形层
+/// 3、笔迹层
+/// 4、实时绘制层
+/// 5、手势层
 class WhiteBoardPage extends StatelessWidget {
   WhiteBoardPage({Key? key}) : super(key: key);
 
@@ -29,9 +35,9 @@ class WhiteBoardPage extends StatelessWidget {
         child: Stack(
           children: [
             // const BackgroundLayerWidget(),
-            GraphicsLayerWidget(),
-            PencilLayerWidget(),
-            DrawingLayerWidget(),
+            const GraphicsLayerWidget(),
+            const PencilLayerWidget(),
+            const DrawingLayerWidget(),
             GestureLayerWidget(),
             const Positioned(
               top: 20,

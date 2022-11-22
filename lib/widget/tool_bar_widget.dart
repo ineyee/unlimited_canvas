@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:unlimited_canvas_plan2/const/const_string.dart';
 import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
+import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
 /// 工具条Widget
 class ToolBarWidget extends StatefulWidget {
@@ -34,16 +32,15 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     _scaleTween = Tween<double>();
     _scaleAnimation = _scaleTween.animate(_curvedAnimation);
     _scaleAnimation.addListener(() {
-      _whiteBoardViewModel.updateScale(
+      _whiteBoardViewModel.updateLayerWidgetScale(
         context: context,
         scale: _scaleAnimation.value,
       );
     });
     _scaleAnimation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _whiteBoardViewModel.operationType = OperationType.drawPencil;
-        _whiteBoardViewModel.scalingCanvasScale = 1.0;
-        _whiteBoardViewModel.updateAllLayerWidget();
+        _whiteBoardViewModel.updateToolBarWidget();
+        _whiteBoardViewModel.updatePresentationLayerWidget();
       }
     });
   }
@@ -69,7 +66,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
 
   Widget _drawPencilWidget() {
     return IconButton(
-      icon: const Icon(Icons.horizontal_rule_sharp),
+      icon: const Icon(Icons.brush),
       onPressed: () {
         _whiteBoardViewModel.operationType = OperationType.drawPencil;
       },
@@ -87,7 +84,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
 
   Widget _translateCanvasWidget() {
     return IconButton(
-      icon: const Icon(Icons.touch_app),
+      icon: const Icon(Icons.pan_tool),
       onPressed: () {
         _whiteBoardViewModel.operationType = OperationType.translateCanvas;
       },
@@ -99,7 +96,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
       icon: const Icon(Icons.zoom_out),
       onPressed: () {
         _whiteBoardViewModel.operationType = OperationType.scaleCanvas;
-        _whiteBoardViewModel.scaleTo(
+        _whiteBoardViewModel.aroundScreenScaleTo(
           targetScale: double.parse((_whiteBoardViewModel.curCanvasScale -
                           _whiteBoardViewModel.stepScale)
                       .toStringAsFixed(1)) <=
@@ -118,7 +115,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     return GestureDetector(
       child: Text("${(_whiteBoardViewModel.curCanvasScale * 100).toInt()}%"),
       onTap: () {
-        _whiteBoardViewModel.scaleTo(
+        _whiteBoardViewModel.aroundScreenScaleTo(
           targetScale: 1.0,
           animationController: _animationController,
           scaleTween: _scaleTween,
@@ -132,7 +129,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
       icon: const Icon(Icons.zoom_in),
       onPressed: () {
         _whiteBoardViewModel.operationType = OperationType.scaleCanvas;
-        _whiteBoardViewModel.scaleTo(
+        _whiteBoardViewModel.aroundScreenScaleTo(
           targetScale: double.parse((_whiteBoardViewModel.curCanvasScale +
                           _whiteBoardViewModel.stepScale)
                       .toStringAsFixed(1)) >=
