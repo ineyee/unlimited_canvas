@@ -33,7 +33,6 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     _scaleAnimation = _scaleTween.animate(_curvedAnimation);
     _scaleAnimation.addListener(() {
       _whiteBoardViewModel.updateLayerWidgetScale(
-        context: context,
         scale: _scaleAnimation.value,
       );
     });

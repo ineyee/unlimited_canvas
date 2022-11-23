@@ -1,6 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:unlimited_canvas_plan2/const/const_number.dart';
 import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
@@ -16,8 +17,8 @@ class BackgroundLayerWidget extends StatelessWidget {
         return Transform(
           transform: Matrix4.identity()
             ..translate(
-              whiteBoardViewModel.curCanvasOffset.dx - ConstNumber.screenWidth / 2,
-              whiteBoardViewModel.curCanvasOffset.dy - ConstNumber.screenHeight / 2,
+              whiteBoardViewModel.curCanvasOffset.dx,
+              whiteBoardViewModel.curCanvasOffset.dy,
             )
             ..scale(whiteBoardViewModel.curCanvasScale),
           child: RepaintBoundary(
@@ -40,7 +41,7 @@ class _BackgroundLayerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     debugPrint("BackgroundLayerWidget===repaint");
 
-    drawDot(canvas);
+    _drawDot(canvas);
   }
 
   @override
@@ -48,112 +49,166 @@ class _BackgroundLayerPainter extends CustomPainter {
     return true;
   }
 
-  void drawDot(Canvas canvas) {
-    double dotWidth = 1.5;
-    double scale = _whiteBoardViewModel.curCanvasScale;
-    double space = 40 * scale;
+  void _drawDot(Canvas canvas) {
+    double dotRadius = 2;
+    double dotSpace = 40;
 
-    double screenWidth = ConstNumber.screenWidth;
-    double screenHeight = ConstNumber.screenHeight;
+    // 1/4屏的大小
+    Size fakeVisibleAreaSize = _whiteBoardViewModel.visibleAreaSize / 2;
+    // 缩放的时候影响fake大小
+    fakeVisibleAreaSize /= _whiteBoardViewModel.curCanvasScale;
 
-    Offset centerPoint = Offset(ConstNumber.screenWidth / 2, ConstNumber.screenHeight / 2);
-
-    int i = 0;
-    int j = 0;
-
-    /// 左上角
-    i = 0;
-    for (double w = centerPoint.dy; w > 0; w -= space) {
-      j = 0;
-      for (double e = centerPoint.dx; e > 0; e -= space) {
-        canvas.drawCircle(
-            Offset(centerPoint.dx - space * j, centerPoint.dy - space * i),
-            dotWidth,
-            Paint());
-
-        j++;
+    // 右下角1/4屏
+    // 平移的时候影响fake大小
+    Size rightBottomFakeVisibleAreaSize = Size(
+      fakeVisibleAreaSize.width +
+          (_whiteBoardViewModel.visibleAreaCenter.dx -
+                  _whiteBoardViewModel.curCanvasOffset.dx) /
+              _whiteBoardViewModel.curCanvasScale,
+      fakeVisibleAreaSize.height +
+          (_whiteBoardViewModel.visibleAreaCenter.dy -
+                  _whiteBoardViewModel.curCanvasOffset.dy) /
+              _whiteBoardViewModel.curCanvasScale,
+    );
+    Rect rightBottomRect = Rect.fromLTWH(
+      0,
+      0,
+      rightBottomFakeVisibleAreaSize.width,
+      rightBottomFakeVisibleAreaSize.height,
+    );
+    debugPrint(
+        "rightBottomRect===>${Offset(rightBottomRect.left, rightBottomRect.top)} $rightBottomFakeVisibleAreaSize");
+    if (rightBottomFakeVisibleAreaSize > Size.zero) {
+      for (double x = rightBottomRect.left;
+          x <= rightBottomRect.left + rightBottomRect.width;
+          x += dotSpace) {
+        for (double y = rightBottomRect.top;
+            y <= rightBottomRect.top + rightBottomRect.height;
+            y += dotSpace) {
+          canvas.drawCircle(
+            Offset(
+              x,
+              y,
+            ),
+            dotRadius,
+            Paint(),
+          );
+        }
       }
-
-      i++;
     }
 
-    /// 右上角
-    i = 0;
-    for (double w = centerPoint.dy; w > 0; w -= space) {
-      j = 0;
-      for (double e = screenWidth - centerPoint.dx; e > 0; e -= space) {
-        canvas.drawCircle(
-            Offset(centerPoint.dx + space * j, centerPoint.dy - space * i),
-            dotWidth,
-            Paint());
-
-        j++;
+    // 右上角1/4屏
+    Size rightTopFakeVisibleAreaSize = Size(
+      fakeVisibleAreaSize.width +
+          (_whiteBoardViewModel.visibleAreaCenter.dx -
+                  _whiteBoardViewModel.curCanvasOffset.dx) /
+              _whiteBoardViewModel.curCanvasScale,
+      fakeVisibleAreaSize.height -
+          (_whiteBoardViewModel.visibleAreaCenter.dy -
+                  _whiteBoardViewModel.curCanvasOffset.dy) /
+              _whiteBoardViewModel.curCanvasScale,
+    );
+    Rect rightTopRect = Rect.fromLTWH(
+      0,
+      -rightTopFakeVisibleAreaSize.height,
+      rightTopFakeVisibleAreaSize.width,
+      rightTopFakeVisibleAreaSize.height,
+    );
+    debugPrint(
+        "rightTopRect===>${Offset(rightTopRect.left, rightTopRect.top)} $rightTopFakeVisibleAreaSize");
+    if (rightTopFakeVisibleAreaSize > Size.zero) {
+      for (double x = rightTopRect.left + dotSpace;
+          x <= rightTopRect.left + rightTopRect.width;
+          x += dotSpace) {
+        for (double y = rightTopRect.top + rightTopRect.height - dotSpace;
+            y >= rightTopRect.top;
+            y -= dotSpace) {
+          canvas.drawCircle(
+            Offset(
+              x,
+              y,
+            ),
+            dotRadius,
+            Paint(),
+          );
+        }
       }
-
-      i++;
     }
 
-    /// 右下角
-    i = 0;
-    for (double w = screenHeight - centerPoint.dy; w > 0; w -= space) {
-      j = 0;
-      for (double e = screenWidth - centerPoint.dx; e > 0; e -= space) {
-        canvas.drawCircle(
-            Offset(centerPoint.dx + space * j, centerPoint.dy + space * i),
-            dotWidth,
-            Paint());
-
-        j++;
+    // 左上角1/4屏
+    Size leftTopFakeVisibleAreaSize = Size(
+      fakeVisibleAreaSize.width -
+          (_whiteBoardViewModel.visibleAreaCenter.dx -
+                  _whiteBoardViewModel.curCanvasOffset.dx) /
+              _whiteBoardViewModel.curCanvasScale,
+      fakeVisibleAreaSize.height -
+          (_whiteBoardViewModel.visibleAreaCenter.dy -
+                  _whiteBoardViewModel.curCanvasOffset.dy) /
+              _whiteBoardViewModel.curCanvasScale,
+    );
+    Rect leftTopRect = Rect.fromLTWH(
+      -leftTopFakeVisibleAreaSize.width,
+      -leftTopFakeVisibleAreaSize.height,
+      leftTopFakeVisibleAreaSize.width,
+      leftTopFakeVisibleAreaSize.height,
+    );
+    debugPrint(
+        "leftTopRect===>${Offset(leftTopRect.left, leftTopRect.top)} $leftTopFakeVisibleAreaSize");
+    if (leftTopFakeVisibleAreaSize > Size.zero) {
+      for (double x = leftTopRect.left + leftTopRect.width;
+          x >= -leftTopRect.width;
+          x -= dotSpace) {
+        for (double y = leftTopRect.top + leftTopRect.height;
+            y >= -leftTopRect.height;
+            y -= dotSpace) {
+          canvas.drawCircle(
+            Offset(
+              x,
+              y,
+            ),
+            dotRadius,
+            Paint(),
+          );
+        }
       }
-
-      i++;
     }
 
-    /// 左下角
-    i = 0;
-    for (double w = screenHeight - centerPoint.dy; w > 0; w -= space) {
-      j = 0;
-      for (double e = centerPoint.dx; e > 0; e -= space) {
-        canvas.drawCircle(
-            Offset(centerPoint.dx - space * j, centerPoint.dy + space * i),
-            dotWidth,
-            Paint());
-
-        j++;
+    // 左下角1/4屏
+    Size leftBottomFakeVisibleAreaSize = Size(
+      fakeVisibleAreaSize.width -
+          (_whiteBoardViewModel.visibleAreaCenter.dx -
+                  _whiteBoardViewModel.curCanvasOffset.dx) /
+              _whiteBoardViewModel.curCanvasScale,
+      fakeVisibleAreaSize.height +
+          (_whiteBoardViewModel.visibleAreaCenter.dy -
+                  _whiteBoardViewModel.curCanvasOffset.dy) /
+              _whiteBoardViewModel.curCanvasScale,
+    );
+    Rect leftBottomRect = Rect.fromLTWH(
+      -leftBottomFakeVisibleAreaSize.width,
+      0,
+      leftBottomFakeVisibleAreaSize.width,
+      leftBottomFakeVisibleAreaSize.height,
+    );
+    debugPrint(
+        "leftBottomRect===>${Offset(leftBottomRect.left, leftBottomRect.top)} $leftBottomFakeVisibleAreaSize");
+    if (leftBottomFakeVisibleAreaSize > Size.zero) {
+      for (double x = leftBottomRect.left + leftBottomRect.width - dotSpace;
+          x >= -leftBottomRect.width;
+          x -= dotSpace) {
+        for (double y = leftBottomRect.top + dotSpace;
+            y <= leftBottomRect.top + leftBottomRect.height;
+            y += dotSpace) {
+          canvas.drawCircle(
+            Offset(
+              x,
+              y,
+            ),
+            dotRadius,
+            Paint(),
+          );
+        }
       }
-
-      i++;
     }
-  }
-
-  /*
- 绘制网格路径
- @param step   小正方形边长
- @param winSize 屏幕尺寸
- */
-  Path gridPath(Size winSize, int step) {
-    Path path = Path();
-
-    for (int i = 0; i < winSize.height / step + 1; i++) {
-      path.moveTo(0, step * i.toDouble());
-      path.lineTo(winSize.width, step * i.toDouble());
-    }
-
-    for (int i = 0; i < winSize.width / step + 1; i++) {
-      path.moveTo(step * i.toDouble(), 0);
-      path.lineTo(step * i.toDouble(), winSize.height);
-    }
-    return path;
-  }
-
-
-  //绘制网格
-  drawGrid(Canvas canvas, Size winSize,
-      [int step = 10, int color = 0xff06BDF8]) {
-    var paint = Paint();
-    paint.style = PaintingStyle.stroke;
-    paint.color = Color(color);
-    paint.isAntiAlias = true;
-    canvas.drawPath(gridPath(winSize, step), paint);
   }
 }

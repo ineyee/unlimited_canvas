@@ -23,18 +23,24 @@ class WhiteBoardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 设置画布的原点为可视区域的中心，即一上来就把画布的原点translate到可视区域中心的位置
-    _whiteBoardViewModel.curCanvasOffset = Offset(
+    _whiteBoardViewModel.visibleAreaSize = MediaQuery.of(context).size;
+    _whiteBoardViewModel.visibleAreaCenter = Offset(
       MediaQuery.of(context).size.width / 2,
       MediaQuery.of(context).size.height / 2,
     );
+    // 设置画布的原点为可视区域的中心，即一上来就把画布的原点translate到可视区域中心的位置
+    // 桌面端的窗口拖动改变大小时会实时触发这个赋值操作，为了保证只有第一次才赋值所以加个Offset.zero的判断
+    if (_whiteBoardViewModel.curCanvasOffset == Offset.zero) {
+      _whiteBoardViewModel.curCanvasOffset =
+          _whiteBoardViewModel.visibleAreaCenter;
+    }
 
     return Scaffold(
       body: FPSWidget(
         alignment: Alignment.bottomLeft,
         child: Stack(
           children: [
-            // const BackgroundLayerWidget(),
+            const BackgroundLayerWidget(),
             const GraphicsLayerWidget(),
             const PencilLayerWidget(),
             const DrawingLayerWidget(),

@@ -61,4 +61,10 @@ class WhiteBoardViewModel extends GetxController {
   ///
   /// 用来计算双指缩放是缩小还是放大
   ScaleUpdateDetails? lastScaleUpdateDetails;
+
+  /// 可视区域的大小
+  Size visibleAreaSize = Size.zero;
+
+  /// 可视区域的中心
+  Offset visibleAreaCenter = Offset.zero;
 }

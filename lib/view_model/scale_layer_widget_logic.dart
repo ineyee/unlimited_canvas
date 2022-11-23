@@ -27,16 +27,12 @@ extension ScaleLayerWidgetLogic on WhiteBoardViewModel {
   }
 
   void updateLayerWidgetScale({
-    required BuildContext context,
     required double scale,
   }) {
     preCanvasScale = curCanvasScale;
     curCanvasScale = scale;
     curCanvasOffset += AlgorithmUtil.centerZoomAlgorithm(
-      center: Offset(
-        MediaQuery.of(context).size.width / 2,
-        MediaQuery.of(context).size.height / 2,
-      ),
+      center: visibleAreaCenter,
       curCanvasOffset: curCanvasOffset,
       curCanvasScale: curCanvasScale,
       preCanvasScale: preCanvasScale,
