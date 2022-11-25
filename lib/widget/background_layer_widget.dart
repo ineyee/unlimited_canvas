@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,7 +45,9 @@ class _BackgroundLayerPainter extends CustomPainter {
       case BackgroundType.none:
         return;
       case BackgroundType.dot:
-        _drawDot(canvas);
+        if (_whiteBoardViewModel.curCanvasScale >= 0.2) {
+          _drawDot(canvas);
+        }
         break;
       case BackgroundType.grid:
         _drawGrid(canvas);
@@ -60,7 +62,8 @@ class _BackgroundLayerPainter extends CustomPainter {
 
   void _drawDot(Canvas canvas) {
     double dotRadius = 2;
-    double dotSpace = 40;
+    double dotSpace = 48;
+    List<Offset> points = [];
 
     // 1/4屏的大小
     Size fakeVisibleAreaSize = _whiteBoardViewModel.visibleAreaSize / 2;
@@ -94,14 +97,7 @@ class _BackgroundLayerPainter extends CustomPainter {
         for (double y = rightBottomRect.top;
             y <= rightBottomRect.top + rightBottomRect.height;
             y += dotSpace) {
-          canvas.drawCircle(
-            Offset(
-              x,
-              y,
-            ),
-            dotRadius,
-            Paint(),
-          );
+          points.add(Offset(x, y));
         }
       }
     }
@@ -132,14 +128,7 @@ class _BackgroundLayerPainter extends CustomPainter {
         for (double y = rightTopRect.top + rightTopRect.height - dotSpace;
             y >= rightTopRect.top;
             y -= dotSpace) {
-          canvas.drawCircle(
-            Offset(
-              x,
-              y,
-            ),
-            dotRadius,
-            Paint(),
-          );
+          points.add(Offset(x, y));
         }
       }
     }
@@ -170,14 +159,7 @@ class _BackgroundLayerPainter extends CustomPainter {
         for (double y = leftTopRect.top + leftTopRect.height;
             y >= -leftTopRect.height;
             y -= dotSpace) {
-          canvas.drawCircle(
-            Offset(
-              x,
-              y,
-            ),
-            dotRadius,
-            Paint(),
-          );
+          points.add(Offset(x, y));
         }
       }
     }
@@ -208,22 +190,23 @@ class _BackgroundLayerPainter extends CustomPainter {
         for (double y = leftBottomRect.top + dotSpace;
             y <= leftBottomRect.top + leftBottomRect.height;
             y += dotSpace) {
-          canvas.drawCircle(
-            Offset(
-              x,
-              y,
-            ),
-            dotRadius,
-            Paint(),
-          );
+          points.add(Offset(x, y));
         }
       }
     }
+
+    canvas.drawPoints(
+      PointMode.points,
+      points,
+      Paint()
+        ..strokeWidth = dotRadius
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   void _drawGrid(Canvas canvas) {
     double lineWidth = 0.5;
-    double lineSpace = 40;
+    double lineSpace = 48;
 
     // 1/4屏的大小
     Size fakeVisibleAreaSize = _whiteBoardViewModel.visibleAreaSize / 2;
