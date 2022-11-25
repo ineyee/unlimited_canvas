@@ -28,6 +28,13 @@ enum OperationType {
   dragElement,
 }
 
+/// 背景类型
+enum BackgroundType {
+  none,
+  dot,
+  grid,
+}
+
 /// 白板VM层
 class WhiteBoardViewModel extends GetxController {
   /// 正在对画布进行什么操作
@@ -67,4 +74,7 @@ class WhiteBoardViewModel extends GetxController {
 
   /// 可视区域的中心
   Offset visibleAreaCenter = Offset.zero;
+
+  /// 背景类型
+  BackgroundType backgroundType = BackgroundType.none;
 }

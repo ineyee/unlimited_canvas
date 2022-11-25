@@ -57,6 +57,9 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
             _zoomOutWidget(context),
             _canvasScaleWidget(),
             _zoomInWidget(context),
+            _noneWidget(),
+            _dotWidget(),
+            _gridWidget(),
           ],
         );
       },
@@ -139,6 +142,36 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
           animationController: _animationController,
           scaleTween: _scaleTween,
         );
+      },
+    );
+  }
+
+  Widget _noneWidget() {
+    return IconButton(
+      icon: const Icon(Icons.rectangle_outlined),
+      onPressed: () {
+        _whiteBoardViewModel.backgroundType = BackgroundType.none;
+        _whiteBoardViewModel.updateBackgroundLayerWidget();
+      },
+    );
+  }
+
+  Widget _dotWidget() {
+    return IconButton(
+      icon: const Icon(Icons.circle),
+      onPressed: () {
+        _whiteBoardViewModel.backgroundType = BackgroundType.dot;
+        _whiteBoardViewModel.updateBackgroundLayerWidget();
+      },
+    );
+  }
+
+  Widget _gridWidget() {
+    return IconButton(
+      icon: const Icon(Icons.grid_on),
+      onPressed: () {
+        _whiteBoardViewModel.backgroundType = BackgroundType.grid;
+        _whiteBoardViewModel.updateBackgroundLayerWidget();
       },
     );
   }
