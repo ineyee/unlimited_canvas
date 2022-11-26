@@ -39,14 +39,22 @@ class _PencilLayerPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     debugPrint("PencilLayerWidget===repaint");
-
+    // 笔迹的可绘制区域
+    Rect canvasRect = const Rect.fromLTWH(
+      -100000000,
+      -100000000,
+      200000000,
+      200000000,
+    );
     canvas.saveLayer(
-        Rect.fromLTWH(
-            -_whiteBoardViewModel.visibleAreaSize.width,
-            -_whiteBoardViewModel.visibleAreaSize.height,
-            _whiteBoardViewModel.visibleAreaSize.width * 2,
-            _whiteBoardViewModel.visibleAreaSize.height * 2),
-        Paint());
+      Rect.fromLTWH(
+        canvasRect.left,
+        canvasRect.top,
+        canvasRect.width,
+        canvasRect.height,
+      ),
+      Paint(),
+    );
     for (PencilElementModel pencilElementModel
         in _whiteBoardViewModel.pencilElementModelList) {
       Path path = Path();

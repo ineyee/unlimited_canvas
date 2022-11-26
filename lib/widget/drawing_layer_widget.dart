@@ -59,13 +59,6 @@ class _DrawingLayerPainter extends CustomPainter {
           Paint()..color = Colors.yellow,
         );
       } else if (baseElementModel is PencilElementModel) {
-        canvas.saveLayer(
-            Rect.fromLTWH(
-                -_whiteBoardViewModel.visibleAreaSize.width / 2,
-                -_whiteBoardViewModel.visibleAreaSize.height / 2,
-                _whiteBoardViewModel.visibleAreaSize.width,
-                _whiteBoardViewModel.visibleAreaSize.height),
-            Paint());
         Path path = Path();
         int i = 0;
         for (Offset item in baseElementModel.points) {
@@ -84,7 +77,6 @@ class _DrawingLayerPainter extends CustomPainter {
             ..style = PaintingStyle.stroke
             ..blendMode = BlendMode.srcOver,
         );
-        canvas.restore();
       }
     }
   }
