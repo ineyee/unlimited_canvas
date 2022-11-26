@@ -40,6 +40,13 @@ class _PencilLayerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     debugPrint("PencilLayerWidget===repaint");
 
+    canvas.saveLayer(
+        Rect.fromLTWH(
+            -_whiteBoardViewModel.visibleAreaSize.width,
+            -_whiteBoardViewModel.visibleAreaSize.height,
+            _whiteBoardViewModel.visibleAreaSize.width * 2,
+            _whiteBoardViewModel.visibleAreaSize.height * 2),
+        Paint());
     for (PencilElementModel pencilElementModel
         in _whiteBoardViewModel.pencilElementModelList) {
       Path path = Path();
@@ -55,17 +62,22 @@ class _PencilLayerPainter extends CustomPainter {
       canvas.drawPath(
         path,
         Paint()
-          ..color = Colors.purple
-          ..strokeWidth = 5
-          ..style = PaintingStyle.stroke,
+          ..color =
+              pencilElementModel.isEraser ? Colors.transparent : Colors.purple
+          ..strokeWidth = pencilElementModel.isEraser ? 20 : 5
+          ..style = PaintingStyle.stroke
+          ..blendMode =
+              pencilElementModel.isEraser ? BlendMode.clear : BlendMode.srcOver,
       );
     }
+    canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant _PencilLayerPainter oldDelegate) {
     // 新增笔迹再重绘，其它情况下都不需要重绘
-    if (_whiteBoardViewModel.operationType == OperationType.drawPencil) {
+    if (_whiteBoardViewModel.operationType == OperationType.drawPencil ||
+        _whiteBoardViewModel.operationType == OperationType.drawEraser) {
       return true;
     }
 

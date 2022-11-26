@@ -95,10 +95,19 @@ extension ListenerLogic on WhiteBoardViewModel {
     switch (operationType) {
       case OperationType.drawPencil:
         PencilElementModel pencilElementModel = PencilElementModel();
+        pencilElementModel.isEraser = operationType == OperationType.drawEraser;
         pencilElementModel.points.add(point);
         drawingElementModelList.add(pencilElementModel);
 
         updateDrawingLayerWidget();
+        break;
+      case OperationType.drawEraser:
+        PencilElementModel pencilElementModel = PencilElementModel();
+        pencilElementModel.isEraser = operationType == OperationType.drawEraser;
+        pencilElementModel.points.add(point);
+        pencilElementModelList.add(pencilElementModel);
+
+        updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:
         GraphicsElementModel graphicsElementModel = GraphicsElementModel();
@@ -125,6 +134,12 @@ extension ListenerLogic on WhiteBoardViewModel {
         pencilElementModel.points.add(point);
 
         updateDrawingLayerWidget();
+        break;
+      case OperationType.drawEraser:
+        PencilElementModel pencilElementModel = pencilElementModelList.last;
+        pencilElementModel.points.add(point);
+
+        updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:
         GraphicsElementModel graphicsElementModel =
@@ -164,6 +179,13 @@ extension ListenerLogic on WhiteBoardViewModel {
         drawingElementModelList.removeLast();
 
         updateDrawingLayerWidget();
+        updatePencilLayerWidget();
+        break;
+      case OperationType.drawEraser:
+        PencilElementModel pencilElementModel = pencilElementModelList.last;
+        pencilElementModel.points.add(point);
+        pencilElementModel.setP1P2();
+
         updatePencilLayerWidget();
         break;
       case OperationType.drawGraphics:

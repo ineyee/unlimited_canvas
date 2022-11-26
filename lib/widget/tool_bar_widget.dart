@@ -52,6 +52,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
         return Row(
           children: [
             _drawPencilWidget(),
+            _drawEraserWidget(),
             _drawGraphicsWidget(),
             _translateCanvasWidget(),
             _zoomOutWidget(context),
@@ -68,9 +69,18 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
 
   Widget _drawPencilWidget() {
     return IconButton(
-      icon: const Icon(Icons.brush),
+      icon: const Icon(Icons.horizontal_rule),
       onPressed: () {
         _whiteBoardViewModel.operationType = OperationType.drawPencil;
+      },
+    );
+  }
+
+  Widget _drawEraserWidget() {
+    return IconButton(
+      icon: const Icon(Icons.brush),
+      onPressed: () {
+        _whiteBoardViewModel.operationType = OperationType.drawEraser;
       },
     );
   }

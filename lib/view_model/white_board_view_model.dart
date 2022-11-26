@@ -12,6 +12,9 @@ enum OperationType {
   /// 绘制笔迹
   drawPencil,
 
+  /// 绘制橡皮擦
+  drawEraser,
+
   /// 绘制图形
   drawGraphics,
 

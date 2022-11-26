@@ -4,6 +4,9 @@ import 'package:unlimited_canvas_plan2/model/base_element_model.dart';
 
 /// 笔迹元素模型
 class PencilElementModel extends BaseElementModel {
+  /// 是否是橡皮擦
+  bool isEraser = false;
+
   /// 笔迹上所有的点
   List<Offset> points = [];
 
