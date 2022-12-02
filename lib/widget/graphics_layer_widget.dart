@@ -5,6 +5,11 @@ import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
 /// 图形层Widget
+///
+/// 重绘时机：
+/// 1、新绘制一个图形结束了
+/// 2、开始拖动一个图形（需要把这个图形从图形层移除，提到实时绘制层）
+/// 3、结束拖动一个图形（需要把这个图形从实时绘制层移除，下放到图形层）
 class GraphicsLayerWidget extends StatelessWidget {
   const GraphicsLayerWidget({Key? key}) : super(key: key);
 
@@ -54,7 +59,6 @@ class _GraphicsLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GraphicsLayerPainter oldDelegate) {
-    // 新增图形再重绘，其它情况下都不需要重绘
     if (_whiteBoardViewModel.operationType == OperationType.drawGraphics ||
         _whiteBoardViewModel.operationType == OperationType.dragElement) {
       return true;
