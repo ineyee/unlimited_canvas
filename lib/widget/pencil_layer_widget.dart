@@ -5,6 +5,10 @@ import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
 /// 笔迹层Widget
+///
+/// 重绘时机：
+/// 1、新绘制一根笔迹结束了
+/// 2、绘制橡皮擦
 class PencilLayerWidget extends StatelessWidget {
   const PencilLayerWidget({Key? key}) : super(key: key);
 
@@ -83,7 +87,6 @@ class _PencilLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PencilLayerPainter oldDelegate) {
-    // 新增笔迹再重绘，其它情况下都不需要重绘
     if (_whiteBoardViewModel.operationType == OperationType.drawPencil ||
         _whiteBoardViewModel.operationType == OperationType.drawEraser) {
       return true;
