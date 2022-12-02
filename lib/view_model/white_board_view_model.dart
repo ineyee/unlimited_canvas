@@ -18,6 +18,9 @@ enum OperationType {
   /// 绘制图形
   drawGraphics,
 
+  /// 拖动元素
+  dragElement,
+
   /// 平移画布
   translateCanvas,
 
@@ -27,8 +30,8 @@ enum OperationType {
   /// 平移且缩放画布
   translateAndScaleCanvas,
 
-  /// 拖动元素
-  dragElement,
+  /// 改变画布的背景类型
+  changeBackgroundType,
 }
 
 /// 背景类型

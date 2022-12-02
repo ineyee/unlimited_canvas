@@ -160,6 +160,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     return IconButton(
       icon: const Icon(Icons.rectangle_outlined),
       onPressed: () {
+        _whiteBoardViewModel.operationType = OperationType.changeBackgroundType;
         _whiteBoardViewModel.backgroundType = BackgroundType.none;
         _whiteBoardViewModel.updateBackgroundLayerWidget();
       },
@@ -170,6 +171,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     return IconButton(
       icon: const Icon(Icons.circle),
       onPressed: () {
+        _whiteBoardViewModel.operationType = OperationType.changeBackgroundType;
         _whiteBoardViewModel.backgroundType = BackgroundType.dot;
         _whiteBoardViewModel.updateBackgroundLayerWidget();
       },
@@ -180,6 +182,7 @@ class _ToolBarWidgetState extends State<ToolBarWidget>
     return IconButton(
       icon: const Icon(Icons.grid_on),
       onPressed: () {
+        _whiteBoardViewModel.operationType = OperationType.changeBackgroundType;
         _whiteBoardViewModel.backgroundType = BackgroundType.grid;
         _whiteBoardViewModel.updateBackgroundLayerWidget();
       },

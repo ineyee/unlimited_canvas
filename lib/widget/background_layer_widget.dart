@@ -6,6 +6,10 @@ import 'package:unlimited_canvas_plan2/view_model/white_board_view_model.dart';
 import 'package:unlimited_canvas_plan2/const/const_string.dart';
 
 /// 背景层Widget
+///
+/// 重绘时机：
+/// 1、平移画布、缩放画布
+/// 2、改变画布的背景类型
 class BackgroundLayerWidget extends StatelessWidget {
   const BackgroundLayerWidget({Key? key}) : super(key: key);
 
@@ -57,7 +61,16 @@ class _BackgroundLayerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _BackgroundLayerPainter oldDelegate) {
-    return true;
+    if (_whiteBoardViewModel.operationType == OperationType.translateCanvas ||
+        _whiteBoardViewModel.operationType == OperationType.scaleCanvas ||
+        _whiteBoardViewModel.operationType ==
+            OperationType.translateAndScaleCanvas ||
+        _whiteBoardViewModel.operationType ==
+            OperationType.changeBackgroundType) {
+      return true;
+    }
+
+    return false;
   }
 
   void _drawDot(Canvas canvas) {
@@ -88,8 +101,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       rightBottomFakeVisibleAreaSize.width,
       rightBottomFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "rightBottomRect===>${Offset(rightBottomRect.left, rightBottomRect.top)} $rightBottomFakeVisibleAreaSize");
+    // debugPrint(
+    //     "rightBottomRect===>${Offset(rightBottomRect.left, rightBottomRect.top)} $rightBottomFakeVisibleAreaSize");
     if (rightBottomFakeVisibleAreaSize > Size.zero) {
       for (double x = rightBottomRect.left;
           x <= rightBottomRect.left + rightBottomRect.width;
@@ -119,8 +132,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       rightTopFakeVisibleAreaSize.width,
       rightTopFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "rightTopRect===>${Offset(rightTopRect.left, rightTopRect.top)} $rightTopFakeVisibleAreaSize");
+    // debugPrint(
+    //     "rightTopRect===>${Offset(rightTopRect.left, rightTopRect.top)} $rightTopFakeVisibleAreaSize");
     if (rightTopFakeVisibleAreaSize > Size.zero) {
       for (double x = rightTopRect.left + dotSpace;
           x <= rightTopRect.left + rightTopRect.width;
@@ -150,8 +163,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       leftTopFakeVisibleAreaSize.width,
       leftTopFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "leftTopRect===>${Offset(leftTopRect.left, leftTopRect.top)} $leftTopFakeVisibleAreaSize");
+    // debugPrint(
+    //     "leftTopRect===>${Offset(leftTopRect.left, leftTopRect.top)} $leftTopFakeVisibleAreaSize");
     if (leftTopFakeVisibleAreaSize > Size.zero) {
       for (double x = leftTopRect.left + leftTopRect.width;
           x >= -leftTopRect.width;
@@ -181,8 +194,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       leftBottomFakeVisibleAreaSize.width,
       leftBottomFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "leftBottomRect===>${Offset(leftBottomRect.left, leftBottomRect.top)} $leftBottomFakeVisibleAreaSize");
+    // debugPrint(
+    //     "leftBottomRect===>${Offset(leftBottomRect.left, leftBottomRect.top)} $leftBottomFakeVisibleAreaSize");
     if (leftBottomFakeVisibleAreaSize > Size.zero) {
       for (double x = leftBottomRect.left + leftBottomRect.width - dotSpace;
           x >= -leftBottomRect.width;
@@ -231,8 +244,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       rightBottomFakeVisibleAreaSize.width,
       rightBottomFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "rightBottomRect===>${Offset(rightBottomRect.left, rightBottomRect.top)} $rightBottomFakeVisibleAreaSize");
+    // debugPrint(
+    //     "rightBottomRect===>${Offset(rightBottomRect.left, rightBottomRect.top)} $rightBottomFakeVisibleAreaSize");
     if (rightBottomFakeVisibleAreaSize > Size.zero) {
       for (double x = rightBottomRect.left;
           x <= rightBottomRect.left + rightBottomRect.width;
@@ -272,8 +285,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       rightTopFakeVisibleAreaSize.width,
       rightTopFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "rightTopRect===>${Offset(rightTopRect.left, rightTopRect.top)} $rightTopFakeVisibleAreaSize");
+    // debugPrint(
+    //     "rightTopRect===>${Offset(rightTopRect.left, rightTopRect.top)} $rightTopFakeVisibleAreaSize");
     if (rightTopFakeVisibleAreaSize > Size.zero) {
       for (double x = rightTopRect.left + lineSpace;
           x <= rightTopRect.left + rightTopRect.width;
@@ -313,8 +326,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       leftTopFakeVisibleAreaSize.width,
       leftTopFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "leftTopRect===>${Offset(leftTopRect.left, leftTopRect.top)} $leftTopFakeVisibleAreaSize");
+    // debugPrint(
+    //     "leftTopRect===>${Offset(leftTopRect.left, leftTopRect.top)} $leftTopFakeVisibleAreaSize");
     if (leftTopFakeVisibleAreaSize > Size.zero) {
       for (double x = leftTopRect.left + leftTopRect.width;
           x >= -leftTopRect.width;
@@ -354,8 +367,8 @@ class _BackgroundLayerPainter extends CustomPainter {
       leftBottomFakeVisibleAreaSize.width,
       leftBottomFakeVisibleAreaSize.height,
     );
-    debugPrint(
-        "leftBottomRect===>${Offset(leftBottomRect.left, leftBottomRect.top)} $leftBottomFakeVisibleAreaSize");
+    // debugPrint(
+    //     "leftBottomRect===>${Offset(leftBottomRect.left, leftBottomRect.top)} $leftBottomFakeVisibleAreaSize");
     if (leftBottomFakeVisibleAreaSize > Size.zero) {
       for (double x = leftBottomRect.left + leftBottomRect.width - lineSpace;
           x >= -leftBottomRect.width;
