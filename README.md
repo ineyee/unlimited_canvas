@@ -1,4 +1,4 @@
-# unlimited_canvas_plan2
+# unlimited_canvas
 
 A new Flutter project.
 
