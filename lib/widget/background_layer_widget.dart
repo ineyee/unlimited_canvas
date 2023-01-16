@@ -43,7 +43,7 @@ class _BackgroundLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint("BackgroundLayerWidget===repaint");
+    // debugPrint("BackgroundLayerWidget===repaint");
 
     switch (_whiteBoardViewModel.backgroundType) {
       case BackgroundType.none:

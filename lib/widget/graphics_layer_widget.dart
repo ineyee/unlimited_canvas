@@ -43,7 +43,7 @@ class _GraphicsLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint("GraphicsLayerWidget===repaint");
+    // debugPrint("GraphicsLayerWidget===repaint");
 
     for (GraphicsElementModel graphicsElementModel
         in _whiteBoardViewModel.graphicsElementModelList) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fps_widget/fps_widget.dart';
+import 'package:unlimited_canvas_plan2/keyboard_shortcut/widget/keyboard_shortcut_listener.dart';
 import 'package:unlimited_canvas_plan2/widget/background_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/graphics_layer_widget.dart';
 import 'package:unlimited_canvas_plan2/widget/pencil_layer_widget.dart';
@@ -35,22 +36,24 @@ class WhiteBoardPage extends StatelessWidget {
           _whiteBoardViewModel.visibleAreaCenter;
     }
 
-    return Scaffold(
-      body: FPSWidget(
-        alignment: Alignment.bottomLeft,
-        child: Stack(
-          children: [
-            const BackgroundLayerWidget(),
-            const GraphicsLayerWidget(),
-            const PencilLayerWidget(),
-            const DrawingLayerWidget(),
-            GestureLayerWidget(),
-            const Positioned(
-              top: 20,
-              right: 20,
-              child: ToolBarWidget(),
-            ),
-          ],
+    return KeyboardShortcutListener(
+      child: Scaffold(
+        body: FPSWidget(
+          alignment: Alignment.bottomLeft,
+          child: Stack(
+            children: [
+              const BackgroundLayerWidget(),
+              const GraphicsLayerWidget(),
+              const PencilLayerWidget(),
+              const DrawingLayerWidget(),
+              GestureLayerWidget(),
+              const Positioned(
+                top: 20,
+                right: 20,
+                child: ToolBarWidget(),
+              ),
+            ],
+          ),
         ),
       ),
     );

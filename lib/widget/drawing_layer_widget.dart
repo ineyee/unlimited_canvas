@@ -37,7 +37,7 @@ class _DrawingLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint("DrawingLayerWidget===repaint");
+    // debugPrint("DrawingLayerWidget===repaint");
 
     canvas.translate(
       _whiteBoardViewModel.curCanvasOffset.dx,

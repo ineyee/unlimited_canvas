@@ -42,7 +42,7 @@ class _PencilLayerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    debugPrint("PencilLayerWidget===repaint");
+    // debugPrint("PencilLayerWidget===repaint");
     // 笔迹的可绘制区域
     Rect canvasRect = const Rect.fromLTWH(
       -100000000,
