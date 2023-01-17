@@ -14,11 +14,16 @@ class CommandAddShortcut {
   CommandAddShortcut._();
 
   /// [command/control +]的快捷键
-  static final ShortcutActivator shortcutActivator = LogicalKeySet(
-    Platform.I.operatingSystem == OperatingSystem.macOS
-        ? LogicalKeyboardKey.meta
-        : LogicalKeyboardKey.control,
+  // static final ShortcutActivator shortcutActivator = LogicalKeySet(
+  //   Platform.I.operatingSystem == OperatingSystem.macOS
+  //       ? LogicalKeyboardKey.meta
+  //       : LogicalKeyboardKey.control,
+  //   LogicalKeyboardKey.equal,
+  // );
+  static final ShortcutActivator shortcutActivator = SingleActivator(
     LogicalKeyboardKey.equal,
+    meta: Platform.I.operatingSystem == OperatingSystem.macOS ? true : false,
+    control: Platform.I.operatingSystem == OperatingSystem.macOS ? false : true,
   );
 
   /// [command/control +]的意图和意图的类型

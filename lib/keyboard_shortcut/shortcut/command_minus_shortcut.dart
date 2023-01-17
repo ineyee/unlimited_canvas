@@ -11,11 +11,18 @@ class CommandMinusShortcut {
   CommandMinusShortcut._();
 
   /// [command -]的快捷键
-  static final ShortcutActivator shortcutActivator = LogicalKeySet(
-    Platform.I.operatingSystem == OperatingSystem.macOS
-        ? LogicalKeyboardKey.meta
-        : LogicalKeyboardKey.control,
+  /// 不要使用LogicalKeySet，因为它在快速切换两组按键时会有延时
+  /// 见这个issue:https://github.com/flutter/flutter/issues/97589
+  // static final ShortcutActivator shortcutActivator = LogicalKeySet(
+  //   Platform.I.operatingSystem == OperatingSystem.macOS
+  //       ? LogicalKeyboardKey.meta
+  //       : LogicalKeyboardKey.control,
+  //   LogicalKeyboardKey.minus,
+  // );
+  static final ShortcutActivator shortcutActivator = SingleActivator(
     LogicalKeyboardKey.minus,
+    meta: Platform.I.operatingSystem == OperatingSystem.macOS ? true : false,
+    control: Platform.I.operatingSystem == OperatingSystem.macOS ? false : true,
   );
 
   /// [command -]的意图和意图的类型
